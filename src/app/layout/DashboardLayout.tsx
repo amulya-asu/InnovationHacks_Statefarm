@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
-import { Bell, User, LayoutDashboard, Layers, Wallet, Shield, Settings, AlertCircle, LogOut, X } from 'lucide-react';
+import { Bell, User, LayoutDashboard, Wallet, Shield, Settings, AlertCircle, LogOut, X } from 'lucide-react';
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
 import { useAppData } from '../store/AppContext';
 import { AICoach } from '../pages/AICoach';
@@ -8,7 +8,6 @@ import { AICoach } from '../pages/AICoach';
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard',    path: '/' },
   { icon: AlertCircle,     label: 'Crisis Advisor', path: '/crisis', highlight: true },
-  { icon: Layers,          label: 'Scenarios',    path: '/scenarios' },
   { icon: Wallet,          label: 'Spending',     path: '/spending' },
   { icon: Shield,          label: 'Insurance',    path: '/insurance' },
   { icon: Settings,        label: 'Settings',     path: '/settings' },

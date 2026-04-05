@@ -1,11 +1,12 @@
+import type { CSSProperties } from 'react';
 import { useAppData } from '../store/AppContext';
 import { mockGigWorker } from '../data/mockData';
 import { FinancialHealthScore } from '../components/dashboard/FinancialHealthScore';
+import { AIInsights } from '../components/dashboard/AIInsights';
 import { CashRunway } from '../components/dashboard/CashRunway';
 import { IncomeStabilityCard } from '../components/dashboard/IncomeStabilityCard';
 import { SafeBudgetIndicator } from '../components/dashboard/SafeBudgetIndicator';
 import { SpendingAnalysis } from '../components/dashboard/SpendingAnalysis';
-import { AIInsights } from '../components/dashboard/AIInsights';
 
 // ── INPUT DATA (seed for now, replace with parsed PDF data later) ──
 const USER_PROFILE = {
@@ -111,7 +112,7 @@ const C = {
   pill: "#f3f4f6",
 };
 
-const card: React.CSSProperties = {
+const card: CSSProperties = {
   borderRadius: 16,
   padding: "16px 20px",
   border: "1px solid",
@@ -160,7 +161,7 @@ export function Dashboard() {
   );
   const trend = calcTrend(weeklyAmounts);
   const bufferGap = calcBufferGap(USER_PROFILE.liquid_savings_now, bufferTarget);
-  const weeksToTarget = calcWeeksToTarget(bufferTarget, USER_PROFILE.income_typical_month);
+  const weeksToTarget = calcWeeksToTarget(bufferGap, USER_PROFILE.income_typical_month);
   const bufferPct = Math.min(
     (USER_PROFILE.liquid_savings_now / bufferTarget) * 100,
     100
