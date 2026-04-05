@@ -14,9 +14,16 @@ const CATEGORY_META = [
   { key: 'other',       label: 'Other',       color: '#6b7280', icon: MoreHorizontal },
 ] as const;
 
-interface Props { data: GigWorkerData; }
+interface Props {
+  data: GigWorkerData;
+  computed: {
+    monthlyExpenses: number;
+    monthlyDebt: number;
+    typicalMonthly: number;
+  };
+}
 
-export function SpendingAnalysis({ data }: Props) {
+export function SpendingAnalysis({ data, computed: _computed }: Props) {
   const breakdown = data.financials.spending_breakdown;
   const items = CATEGORY_META
     .map(m => ({ ...m, amount: breakdown[m.key] }))
@@ -27,7 +34,7 @@ export function SpendingAnalysis({ data }: Props) {
   return (
     <Card className="p-6 flex flex-col h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Spending Breakdown</h2>
+        <h2 className="text-lg font-semibold text-gray-900">Where your money goes</h2>
         <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Last month</span>
       </div>
 
@@ -44,7 +51,7 @@ export function SpendingAnalysis({ data }: Props) {
           </ResponsiveContainer>
           <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
             <span className="text-base font-bold text-gray-900">${total.toLocaleString()}</span>
-            <span className="text-xs text-gray-400">total</span>
+            <span className="text-xs text-gray-400">total going out</span>
           </div>
         </div>
       </div>

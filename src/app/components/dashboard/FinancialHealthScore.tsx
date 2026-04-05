@@ -5,11 +5,17 @@ import type { GigWorkerData } from '../../types/financial';
 
 const WORK_LABELS = { rideshare: 'Rideshare Driver', delivery: 'Delivery Worker', freelance: 'Freelancer', contract: 'Contractor' };
 
-interface Props { data: GigWorkerData; }
+interface Props {
+  data: GigWorkerData;
+  computed: {
+    score: number;
+    financialState: string;
+  };
+}
 
-export function FinancialHealthScore({ data }: Props) {
-  const { derived, profile, income } = data;
-  const score = derived.financial_health_score;
+export function FinancialHealthScore({ data, computed }: Props) {
+  const { profile, income } = data;
+  const score = computed.score;
 
   const config = score >= 65
     ? { color: 'text-green-600', ring: 'stroke-green-500', bg: 'from-green-50 to-emerald-50', label: 'Stable', Icon: TrendingUp, badge: 'bg-green-100 text-green-700' }
@@ -41,11 +47,21 @@ export function FinancialHealthScore({ data }: Props) {
             </span>
           </div>
 
-          {derived.safe_monthly_budget < 0 && (
-            <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">
-              ⚠️ In a slow month, expenses exceed income by <strong>${Math.abs(derived.safe_monthly_budget).toLocaleString()}</strong>
-            </div>
-          )}
+          <div className="mt-2">
+            <span style={{
+              fontSize: 13,
+              fontWeight: 600,
+              color: computed.financialState === "Resilient" ? "#065f46"
+                   : computed.financialState === "Building"  ? "#92400e"
+                   : computed.financialState === "Fragile"   ? "#b45309"
+                   : "#991b1b",
+            }}>
+              {computed.financialState === "Resilient" ? "You're in good shape"
+               : computed.financialState === "Building" ? "Getting there"
+               : computed.financialState === "Fragile"  ? "A bit shaky"
+               : "Things are tight"}
+            </span>
+          </div>
         </div>
 
         {/* Score ring */}
@@ -71,7 +87,7 @@ export function FinancialHealthScore({ data }: Props) {
             >
               {score}
             </motion.span>
-            <span className="text-xs text-gray-500 font-medium">Health Score</span>
+            <span className="text-xs text-gray-500 font-medium">Your health</span>
           </div>
         </div>
       </div>

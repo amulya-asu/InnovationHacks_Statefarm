@@ -2,9 +2,20 @@ import { Card } from '../ui/card';
 import { ShieldCheck, ShieldAlert, ArrowRight } from 'lucide-react';
 import type { GigWorkerData } from '../../types/financial';
 
-interface Props { data: GigWorkerData; }
+interface Props {
+  data: GigWorkerData;
+  computed: {
+    liquidSavings: number;
+    bufferTarget: number;
+    bufferPct: number;
+    bufferGap: number;
+    weeksToTarget: number;
+    worstSurplus: number;
+    monthlyExpenses: number;
+  };
+}
 
-export function SafeBudgetIndicator({ data }: Props) {
+export function SafeBudgetIndicator({ data, computed }: Props) {
   const { derived, income, financials } = data;
   const safe = derived.safe_monthly_budget;
   const isSafe = safe > 0;
@@ -20,7 +31,7 @@ export function SafeBudgetIndicator({ data }: Props) {
           }
         </div>
         <div className="flex-1">
-          <h2 className="text-lg font-semibold text-gray-900 mb-1">Safe Budget (Slow Month)</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-1">Your safety net</h2>
           <p className="text-sm text-gray-500 mb-4">
             Based on your <strong>${income.low_monthly_income.toLocaleString()}</strong> worst-case income
           </p>
@@ -28,22 +39,22 @@ export function SafeBudgetIndicator({ data }: Props) {
           {isSafe ? (
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-gray-500 mb-0.5">You should not spend more than</p>
+                <p className="text-xs text-gray-500 mb-0.5">What you can safely spend</p>
                 <p className="text-3xl font-bold text-green-600">${safe.toLocaleString()}<span className="text-base font-normal text-gray-500">/month</span></p>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <ArrowRight className="w-4 h-4 text-green-500" />
-                That's about <strong className="text-green-700">${dailySafe}/day</strong> of discretionary spending
+                That's about <strong className="text-green-700">${dailySafe}/day</strong> of optional spending
               </div>
             </div>
           ) : (
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-red-600 font-medium mb-0.5">Monthly deficit in slow months</p>
+                <p className="text-xs text-red-600 font-medium mb-0.5">Short in a slow month</p>
                 <p className="text-3xl font-bold text-red-600">-${Math.abs(safe).toLocaleString()}<span className="text-base font-normal text-gray-500">/month</span></p>
               </div>
               <p className="text-sm text-red-700 bg-red-100 px-3 py-2 rounded-lg">
-                ⚠️ Your fixed expenses exceed your lowest income. Even one slow month drains savings.
+                ⚠️ Your bills are more than you earn in a slow month. Even one slow month drains your safety net.
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <ArrowRight className="w-4 h-4 text-red-500" />

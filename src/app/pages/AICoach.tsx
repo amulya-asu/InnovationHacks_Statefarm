@@ -96,7 +96,11 @@ const INIT_MESSAGE: Message = {
   content: `Hi! I'm your AI financial coach.\n\nI'm here to help you build a stronger financial future — no judgment, just real advice tailored to your situation.\n\nWhat's on your mind today?`,
 };
 
-export function AICoach() {
+interface AICoachProps {
+  compact?: boolean;
+}
+
+export function AICoach({ compact = false }: AICoachProps) {
   const [msgs, setMsgs] = useState<Message[]>([INIT_MESSAGE]);
   const [input, setInput] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -165,13 +169,17 @@ Coaching style:
     setShowQuick(true);
   };
 
+  const containerClass = compact
+    ? 'flex flex-col h-full'
+    : 'max-w-3xl mx-auto h-[calc(100vh-8rem)] flex flex-col';
+
   return (
-    <div className="max-w-3xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
+    <div className={containerClass}>
       {/* Header */}
       <div className="mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">AI Coach</h1>
+            {!compact && <h1 className="text-2xl font-bold text-gray-900">AI Coach</h1>}
             <p className="text-sm text-gray-500 mt-0.5 flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full inline-block ${streaming ? 'bg-amber-400' : 'bg-green-500'}`} />
               {streaming ? 'Responding…' : 'Live AI · Streaming'}

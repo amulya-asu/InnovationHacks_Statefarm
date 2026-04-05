@@ -4,9 +4,18 @@ import { TrendingDown, Wallet, Calendar, AlertTriangle } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { GigWorkerData } from '../../types/financial';
 
-interface Props { data: GigWorkerData; }
+interface Props {
+  data: GigWorkerData;
+  computed: {
+    liquidSavings: number;
+    weeklyBurn: number;
+    weeklyGap: number;
+    liquidityWeeks: number;
+    fragThreshold: number;
+  };
+}
 
-export function CashRunway({ data }: Props) {
+export function CashRunway({ data, computed }: Props) {
   const { financials, derived, income } = data;
   const days = derived.cash_runway_days;
   const months = (days / 30).toFixed(1);
@@ -23,7 +32,7 @@ export function CashRunway({ data }: Props) {
     <Card className="p-6">
       <div className="flex items-center gap-2 mb-4">
         <Calendar className="w-5 h-5 text-blue-600" />
-        <h2 className="text-lg font-semibold text-gray-900">Cash Runway</h2>
+        <h2 className="text-lg font-semibold text-gray-900">How long can you last?</h2>
         <span className="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
           Worst-case basis
         </span>
@@ -38,10 +47,10 @@ export function CashRunway({ data }: Props) {
         <div className="flex items-end gap-2 mb-1">
           <p className={`text-4xl font-bold ${colors.text}`}>{days}</p>
           <p className="text-lg text-gray-500 mb-1">days</p>
-          <p className="text-sm text-gray-400 mb-1.5">({months} months)</p>
+          <p className="text-sm text-gray-400 mb-1.5">({months} months of bills covered)</p>
         </div>
         <p className="text-sm text-gray-500 mb-4">
-          How long your savings last if income stops entirely
+          Days you can cover if income stops entirely
         </p>
         <Progress value={progress} className="h-3 mb-2" />
         <div className="flex justify-between text-xs text-gray-400">
@@ -56,8 +65,8 @@ export function CashRunway({ data }: Props) {
           <AlertTriangle className={`w-4 h-4 flex-shrink-0 mt-0.5 ${colors.icon}`} />
           <p className={`text-xs font-medium ${colors.text}`}>
             {severity === 'critical'
-              ? 'Critical — under 2 weeks of runway. Activate emergency budget now.'
-              : 'Warning — build to 45 days minimum before any spending increases.'}
+              ? 'Critical — under 2 weeks of bills covered. Activate emergency budget now.'
+              : 'Warning — build to 45 days of bills covered before any spending increases.'}
           </p>
         </div>
       )}
@@ -66,16 +75,16 @@ export function CashRunway({ data }: Props) {
         <div className="p-3 bg-blue-50 rounded-xl">
           <div className="flex items-center gap-1.5 mb-1">
             <Wallet className="w-3.5 h-3.5 text-blue-600" />
-            <span className="text-xs text-gray-500">Savings</span>
+            <span className="text-xs text-gray-500">Money you can use now</span>
           </div>
-          <p className="text-lg font-bold text-blue-600">${financials.savings.toLocaleString()}</p>
+          <p className="text-lg font-bold text-blue-600">${computed.liquidSavings.toLocaleString()}</p>
         </div>
         <div className="p-3 bg-red-50 rounded-xl">
           <div className="flex items-center gap-1.5 mb-1">
             <TrendingDown className="w-3.5 h-3.5 text-red-600" />
-            <span className="text-xs text-gray-500">Monthly Burn</span>
+            <span className="text-xs text-gray-500">What you spend each week</span>
           </div>
-          <p className="text-lg font-bold text-red-600">${financials.fixed_expenses.toLocaleString()}</p>
+          <p className="text-lg font-bold text-red-600">${computed.weeklyBurn.toLocaleString()}</p>
         </div>
       </div>
 

@@ -55,8 +55,8 @@ function buildInsights(data: GigWorkerData): Insight[] {
     insights.push({
       icon: ShieldOff, color: 'text-purple-600', bg: 'bg-purple-50',
       priority: 'warning',
-      title: 'No insurance — one event could be catastrophic',
-      body: 'Without health or disability insurance, a single accident or illness can wipe out savings and stop your income entirely. Explore marketplace plans.',
+      title: "You're not covered while working",
+      body: 'Without health or disability insurance, a single accident or illness can wipe out your safety net and stop your income entirely. Explore marketplace plans.',
     });
   }
 
@@ -64,8 +64,8 @@ function buildInsights(data: GigWorkerData): Insight[] {
     insights.push({
       icon: CreditCard, color: 'text-red-600', bg: 'bg-red-50',
       priority: 'critical',
-      title: 'Slow months put you in deficit',
-      body: `In your worst income month, you spend $${Math.abs(derived.safe_monthly_budget).toLocaleString()} more than you earn. Identify which expenses can be paused during slow periods.`,
+      title: 'Slow months are risky',
+      body: `In your slowest month, your bills are more than you earn by $${Math.abs(derived.safe_monthly_budget).toLocaleString()}. Identify which bills can be paused during slow periods.`,
     });
   }
 
@@ -84,10 +84,41 @@ function buildInsights(data: GigWorkerData): Insight[] {
   });
 }
 
-interface Props { data: GigWorkerData; }
+interface Props {
+  data: GigWorkerData;
+  computed: {
+    score: number;
+    financialState: string;
+    cv: number;
+    weeklyGap: number;
+    bufferGap: number;
+    worstSurplus: number;
+    hasProtection: boolean;
+    liquidityWeeks: number;
+    bufferTarget: number;
+    liquidSavings: number;
+  };
+}
 
-export function AIInsights({ data }: Props) {
+export function AIInsights({ data, computed }: Props) {
+  const primaryInsight =
+    computed.liquidSavings < 400
+      ? `You have less than $400 available. One slow week stops you from covering bills.`
+      : computed.weeklyGap > 0
+      ? `You're $${computed.weeklyGap.toLocaleString()} short this week against your essential bills.`
+      : computed.worstSurplus < 0
+      ? `In your worst month, bills exceed income by $${Math.abs(computed.worstSurplus).toLocaleString()}.`
+      : !computed.hasProtection
+      ? `You're not covered while working. One accident could stop your income entirely.`
+      : computed.cv > 0.55
+      ? `Your income swings ${Math.round(computed.cv * 100)}% — above the gig worker average of 36%.`
+      : `You're building toward your $${computed.bufferTarget.toLocaleString()} safety target. ${computed.liquidityWeeks} weeks covered so far.`;
+
   const insights = buildInsights(data);
+  // Replace the first insight body with the computed primary insight
+  if (insights.length > 0) {
+    insights[0] = { ...insights[0], body: primaryInsight };
+  }
 
   return (
     <Card className="p-6">
@@ -95,7 +126,7 @@ export function AIInsights({ data }: Props) {
         <div className="p-1.5 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg">
           <Sparkles className="w-4 h-4 text-white" />
         </div>
-        <h2 className="text-lg font-semibold text-gray-900">AI Insights</h2>
+        <h2 className="text-lg font-semibold text-gray-900">What to focus on</h2>
         <span className="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">Rule-based · {insights.length} active</span>
       </div>
 

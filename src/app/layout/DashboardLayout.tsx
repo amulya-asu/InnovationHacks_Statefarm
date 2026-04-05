@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router';
-import { Bell, User, LayoutDashboard, Layers, Wallet, Shield, Settings, AlertCircle, MessageSquare, LogOut } from 'lucide-react';
+import { Bell, User, LayoutDashboard, Layers, Wallet, Shield, Settings, AlertCircle, LogOut, X } from 'lucide-react';
 import { Avatar, AvatarFallback } from '../components/ui/avatar';
 import { useAppData } from '../store/AppContext';
+import { AICoach } from '../pages/AICoach';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard',    path: '/' },
@@ -10,7 +11,6 @@ const navItems = [
   { icon: Layers,          label: 'Scenarios',    path: '/scenarios' },
   { icon: Wallet,          label: 'Spending',     path: '/spending' },
   { icon: Shield,          label: 'Insurance',    path: '/insurance' },
-  { icon: MessageSquare,   label: 'AI Coach',     path: '/ai-coach' },
   { icon: Settings,        label: 'Settings',     path: '/settings' },
 ];
 
@@ -18,6 +18,7 @@ export function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isOnboarded, resetData } = useAppData();
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     if (!isOnboarded) navigate('/onboarding', { replace: true });
@@ -98,6 +99,74 @@ export function DashboardLayout() {
       <main className="ml-64 mt-16 p-8">
         <Outlet />
       </main>
+
+      {/* Floating chat button */}
+      <button
+        onClick={() => setChatOpen(true)}
+        style={{
+          position: 'fixed',
+          bottom: 28,
+          right: 28,
+          width: 52,
+          height: 52,
+          borderRadius: '50%',
+          background: '#1C1A16',
+          border: 'none',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+          transition: 'opacity 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
+        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+        aria-label="Open AI Coach"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" fill="white" />
+        </svg>
+      </button>
+
+      {/* Chat modal */}
+      {chatOpen && (
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 101 }}
+            onClick={() => setChatOpen(false)}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 92,
+              right: 28,
+              width: 400,
+              height: 560,
+              zIndex: 102,
+              background: '#fff',
+              borderRadius: 16,
+              boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px 10px', borderBottom: '1px solid #f0f0f0' }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: '#111' }}>AI Coach</span>
+              <button
+                onClick={() => setChatOpen(false)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}
+                aria-label="Close chat"
+              >
+                <X size={18} color="#6b7280" />
+              </button>
+            </div>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+              <AICoach compact />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
